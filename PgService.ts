@@ -13,6 +13,7 @@ export class PgService extends BaseService {
     Object.keys(this.config.instances)
       .forEach((instanceName) => {
         this.instances[instanceName] = new Client(this.config.instances[instanceName]);
+        this.instances[instanceName].connect();
       });
   }
 

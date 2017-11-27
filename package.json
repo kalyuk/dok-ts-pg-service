@@ -1,6 +1,6 @@
 {
   "name": "dok-ts-pg-service",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "main": "index.js",
   "repository": "https://github.com/kalyuk/dok-ts-pg-service.git",
   "author": "Dmitry Kalyuk <dmitry@kalyuk.ru>",
@@ -10,6 +10,7 @@
     "@types/node": "^8.0.53",
     "dok-ts": "^1.0.9",
     "pg": "^7.4.0",
+    "squel": "^5.12.0",
     "typescript": "^2.6.1"
   },
   "scripts": {
