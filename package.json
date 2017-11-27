@@ -1,7 +1,7 @@
 {
   "name": "dok-ts-pg-service",
-  "version": "1.0.0",
-  "main": "PgService.js",
+  "version": "1.0.1",
+  "main": "index.js",
   "repository": "https://github.com/kalyuk/dok-ts-pg-service.git",
   "author": "Dmitry Kalyuk <dmitry@kalyuk.ru>",
   "license": "MIT",
