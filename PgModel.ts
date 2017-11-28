@@ -88,6 +88,24 @@ export class PgModel extends BaseModel {
   }
 
   private async update() {
+    const attributes = [];
+    const values = [];
+
+    const {$db, $tableName} = this.constructor as any;
+
+    this.attributes()
+      .forEach((attr) => {
+        if (this[attr] && attr !== 'id') {
+          attributes.push(`${toUnder(attr)}=$${(values.length + 1)}`);
+          values.push(this[attr]);
+        }
+      });
+
+    values.push(this.id);
+
+    await $db.query('UPDATE ' + $tableName + ' SET ' + attributes.join(',') +
+      ' WHERE id=$' + (values.length), values);
+
     await this.afterUpdate();
   }
 
@@ -99,16 +117,16 @@ export class PgModel extends BaseModel {
     const {$db, $tableName} = this.constructor as any;
 
     this.attributes()
-      .forEach((attr, index) => {
+      .forEach((attr) => {
         if (this[attr]) {
           attributes.push(toUnder(attr));
-          indexes.push(`$${index}`);
+          indexes.push(`$${(values.length + 1)}`);
           values.push(this[attr]);
         }
       });
 
     const item = await $db.query('INSERT INTO ' + $tableName + '(' + attributes.join(',') + ') ' +
-      'VALUES(' + indexes.join(',') + ') RETURNING id', values);
+      ' VALUES(' + indexes.join(',') + ') RETURNING id', values);
 
     this.id = item.rows[0].id;
 
