@@ -31,12 +31,8 @@ export class PgModel extends BaseModel {
       (where ? ' WHERE ' + where : '') +
       ' LIMIT 1', values);
 
-    if (data) {
-      const instance = (new this()) as any;
-      Object.keys(data.rows[0]).forEach(key => {
-        instance.setAttribute(toCamelCase(key), data.rows[0][key])
-      });
-      return instance;
+    if (data && data.rows) {
+      return this.createInstance(data.rows[0]);
     }
 
     return null;
@@ -134,7 +130,7 @@ export class PgModel extends BaseModel {
   }
 
   public static findAll({attributes, where, limit, offset}: FindInterface, values) {
-    return this.query(`
+    const results = this.query(`
     SELECT
     ${attributes ? attributes.join(',') : '*'}
     FROM
@@ -144,5 +140,17 @@ export class PgModel extends BaseModel {
     ${limit ? limit : 10}
     OFFSET ${offset ? offset : 0}
       `, values);
+
+    if (results && results.rows) {
+      return results.rows.map(item => this.createInstance(item));
+    }
+  }
+
+  public static createInstance(row) {
+    const instance = (new this()) as any;
+    Object.keys(row).forEach(key => {
+      instance.setAttribute(toCamelCase(key), row[key])
+    });
+    return instance;
   }
 }
