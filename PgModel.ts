@@ -29,7 +29,7 @@ export class PgModel extends BaseModel {
       ' LIMIT 1', values);
 
     if (data) {
-      return data[0];
+      return data.rows[0];
     }
 
     return null;
