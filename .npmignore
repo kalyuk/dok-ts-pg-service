@@ -7,3 +7,6 @@ src
 nodemon.json
 tsconfig.json
 tslint.json
+PgModel.ts
+index.ts
+PgService.ts

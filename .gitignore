@@ -4,3 +4,5 @@ yarn-error.log
 yarn.lock
 /module
 /service
+*.d.ts
+*.js

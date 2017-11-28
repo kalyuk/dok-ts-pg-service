@@ -21,19 +21,30 @@ export class PgModel extends BaseModel {
     return this.$db.query(query, values);
   }
 
-  public static find({attributes, where}: FindInterface, values) {
-    return this.query(`SELECT ${attributes ? attributes.join(',') : '*'} 
-FROM ${this.$tableName} 
-${where ? 'WHERE ' + where : ''} 
-LIMIT 1`, values);
+  public static async find({attributes, where}: FindInterface, values) {
+    const data = await this.query('SELECT ' +
+      (attributes ? attributes.join(',') : '*') +
+      ' FROM ' + this.$tableName +
+      (where ? ' WHERE ' + where : '') +
+      ' LIMIT 1', values);
+
+    if (data) {
+      return data[0];
+    }
+
+    return null;
   }
 
   public static findAll({attributes, where, limit, offset}: FindInterface, values) {
-    return this.query(`SELECT ${attributes ? attributes.join(',') : '*'} 
-FROM ${this.$tableName} 
-${where ? 'WHERE ' + where : ''} 
-LIMIT ${limit ? limit : 10}
-OFFSET ${offset ? offset : 0}
-`, values);
+    return this.query(`
+    SELECT
+    ${attributes ? attributes.join(',') : '*'}
+    FROM
+    ${this.$tableName}
+    ${where ? 'WHERE ' + where : ''}
+    LIMIT
+    ${limit ? limit : 10}
+    OFFSET ${offset ? offset : 0}
+      `, values);
   }
 }
