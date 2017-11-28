@@ -24,7 +24,7 @@ export class PgModel extends BaseModel {
     return this.$db.query(query, values || []);
   }
 
-  public static async find({attributes, where}: FindInterface, values) {
+  public static async find<T>({attributes, where}: FindInterface, values): Promise<T> {
     const data = await this.query('SELECT ' +
       (attributes ? attributes.join(',') : '*') +
       ' FROM ' + this.$tableName +
@@ -32,13 +32,11 @@ export class PgModel extends BaseModel {
       ' LIMIT 1', values);
 
     if (data) {
-
-      return Object.keys(data.rows[0])
-        .map(key => {
-          const obj = {};
-          obj[toCamelCase(key)] = data[key];
-          return data;
-        });
+      const instance = (new this()) as any;
+      Object.keys(data.rows[0]).forEach(key => {
+        instance.setAttribute(toCamelCase(key), data.rows[0][key])
+      });
+      return instance;
     }
 
     return null;
@@ -56,6 +54,18 @@ export class PgModel extends BaseModel {
 
   }
 
+  public async afterSave() {
+
+  }
+
+  public async afterCreate() {
+
+  }
+
+  public async afterUpdate() {
+
+  }
+
   public async save() {
     if (await this.validate()) {
       if (this.id) {
@@ -70,6 +80,7 @@ export class PgModel extends BaseModel {
       } else {
         await this.create();
       }
+      await this.afterSave();
     } else {
       throw new BaseError(409, 'model.invalid_date')
     }
@@ -77,7 +88,7 @@ export class PgModel extends BaseModel {
   }
 
   private async update() {
-
+    await this.afterUpdate();
   }
 
   private async create() {
@@ -100,6 +111,8 @@ export class PgModel extends BaseModel {
       'VALUES(' + indexes.join(',') + ') RETURNING id', values);
 
     this.id = item.rows[0].id;
+
+    await this.afterCreate();
   }
 
   public static findAll({attributes, where, limit, offset}: FindInterface, values) {

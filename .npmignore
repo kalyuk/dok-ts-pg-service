@@ -10,3 +10,4 @@ tslint.json
 PgModel.ts
 index.ts
 PgService.ts
+helper.ts
