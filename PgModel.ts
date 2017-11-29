@@ -63,7 +63,8 @@ export class PgModel extends BaseModel {
   }
 
   public async save() {
-    if (await this.validate()) {
+    await this.validate();
+    if (!this.hasErrors()) {
       if (this.id) {
         await this.beforeUpdate();
       } else {
@@ -80,6 +81,7 @@ export class PgModel extends BaseModel {
     } else {
       throw new BaseError(409, 'model.invalid_date')
     }
+
     return !this.hasErrors();
   }
 
