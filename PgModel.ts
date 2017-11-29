@@ -31,7 +31,7 @@ export class PgModel extends BaseModel {
       (where ? ' WHERE ' + where : '') +
       ' LIMIT 1', values);
 
-    if (data && data.rows) {
+    if (data && data.rows.length) {
       return this.createInstance(data.rows[0]);
     }
 
