@@ -80,7 +80,7 @@ export class PgModel extends BaseModel {
     } else {
       throw new BaseError(409, 'model.invalid_date')
     }
-
+    return !this.hasErrors();
   }
 
   private async update() {
