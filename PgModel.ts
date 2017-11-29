@@ -50,15 +50,15 @@ export class PgModel extends BaseModel {
 
   }
 
-  public async afterSave() {
+  public async afterSave(scope?: string) {
 
   }
 
-  public async afterCreate() {
+  public async afterCreate(scope?: string) {
 
   }
 
-  public async afterUpdate() {
+  public async afterUpdate(scope?: string) {
 
   }
 
@@ -73,18 +73,18 @@ export class PgModel extends BaseModel {
       await this.beforeSave();
 
       if (this.id) {
-        await this.update()
+        await this.update(scope)
       } else {
-        await this.create();
+        await this.create(scope);
       }
-      await this.afterSave();
+      await this.afterSave(scope);
       return true;
     }
 
     return false;
   }
 
-  private async update() {
+  private async update(scope?) {
     const attributes = [];
     const values = [];
 
@@ -103,10 +103,10 @@ export class PgModel extends BaseModel {
     await $db.query('UPDATE ' + $tableName + ' SET ' + attributes.join(',') +
       ' WHERE id=$' + (values.length), values);
 
-    await this.afterUpdate();
+    await this.afterUpdate(scope);
   }
 
-  private async create() {
+  private async create(scope?) {
     const attributes = [];
     const indexes = [];
     const values = [];
@@ -127,7 +127,7 @@ export class PgModel extends BaseModel {
 
     this.id = item.rows[0].id;
 
-    await this.afterCreate();
+    await this.afterCreate(scope);
   }
 
   public static findAll({attributes, where, limit, offset}: FindInterface, values) {
