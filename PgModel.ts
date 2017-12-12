@@ -13,6 +13,7 @@ export interface FindInterface extends FindOneInterface {
   where: string
   pageSize?: number;
   page?: number;
+  sort?: string[];
 }
 
 export class PgModel extends BaseModel {
@@ -130,7 +131,7 @@ export class PgModel extends BaseModel {
     await this.afterCreate(scope);
   }
 
-  public static async findAll<T>({attributes, where, page, pageSize}: FindInterface, values = []): Promise<T[]> {
+  public static async findAll<T>({attributes, where, page, pageSize, sort}: FindInterface, values = []): Promise<T[]> {
     const $page = page ? page : 1;
     const $pageSize = pageSize ? pageSize : getService('PgService').config.pageSize;
     const offset = ($page - 1) * $pageSize;
@@ -140,6 +141,7 @@ export class PgModel extends BaseModel {
     FROM
     ${this.$tableName}
     ${where ? 'WHERE ' + where : ''}
+    ${sort ? 'order by ' + sort.join(', ') : ''}
     LIMIT ${$pageSize}
     OFFSET ${offset}`,
       values);
