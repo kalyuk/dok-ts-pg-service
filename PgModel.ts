@@ -11,8 +11,8 @@ export interface FindOneInterface {
 export interface FindInterface extends FindOneInterface {
   attributes?: string[];
   where: string
-  limit?: number;
-  offset?: number;
+  pageSize?: number;
+  page?: number;
 }
 
 export class PgModel extends BaseModel {
@@ -130,17 +130,19 @@ export class PgModel extends BaseModel {
     await this.afterCreate(scope);
   }
 
-  public static async findAll<T>({attributes, where, limit, offset}: FindInterface, values): Promise<T[]> {
+  public static async findAll<T>({attributes, where, page, pageSize}: FindInterface, values): Promise<T[]> {
+    const $page = page ? page : 1;
+    const $pageSize = pageSize ? pageSize : 10;
+    const offset = ($page - 1) * $pageSize;
     const results = await this.query(`
     SELECT
     ${attributes ? attributes.join(',') : '*'}
     FROM
     ${this.$tableName}
     ${where ? 'WHERE ' + where : ''}
-    LIMIT
-    ${limit ? limit : 10}
-    OFFSET ${offset ? offset : 0}
-      `, values);
+    LIMIT ${$pageSize}
+    OFFSET ${offset}`,
+      values);
 
     if (results && results.rows) {
       return results.rows.map(item => this.createInstance(item));
