@@ -3,7 +3,8 @@ import {Client} from 'pg';
 
 export class PgService extends BaseService {
   public static options = {
-    instances: {}
+    instances: {},
+    pageSize: 20
   };
 
   private instances: { [key: string]: Client } = {};

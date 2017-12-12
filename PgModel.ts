@@ -1,7 +1,7 @@
 import { BaseModel } from 'dok-ts/base/BaseModel';
 import { Client } from 'pg';
 import { toCamelCase, toUnder } from './helper';
-import { BaseError } from 'dok-ts/base/BaseError';
+import { getService } from 'dok-ts';
 
 export interface FindOneInterface {
   attributes?: string[];
@@ -132,7 +132,7 @@ export class PgModel extends BaseModel {
 
   public static async findAll<T>({attributes, where, page, pageSize}: FindInterface, values = []): Promise<T[]> {
     const $page = page ? page : 1;
-    const $pageSize = pageSize ? pageSize : 10;
+    const $pageSize = pageSize ? pageSize : getService('PgService').config.pageSize;
     const offset = ($page - 1) * $pageSize;
     const results = await this.query(`
     SELECT
