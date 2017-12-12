@@ -24,7 +24,7 @@ export class PgModel extends BaseModel {
     return this.$db.query(query, values || []);
   }
 
-  public static async find<T>({attributes, where}: FindInterface, values): Promise<T> {
+  public static async find<T>({attributes, where}: FindInterface, values = []): Promise<T> {
     const data = await this.query('SELECT ' +
       (attributes ? attributes.join(',') : '*') +
       ' FROM ' + this.$tableName +
@@ -130,7 +130,7 @@ export class PgModel extends BaseModel {
     await this.afterCreate(scope);
   }
 
-  public static async findAll<T>({attributes, where, page, pageSize}: FindInterface, values): Promise<T[]> {
+  public static async findAll<T>({attributes, where, page, pageSize}: FindInterface, values = []): Promise<T[]> {
     const $page = page ? page : 1;
     const $pageSize = pageSize ? pageSize : 10;
     const offset = ($page - 1) * $pageSize;
@@ -149,6 +149,32 @@ export class PgModel extends BaseModel {
     }
 
     return [];
+  }
+
+  public static async findAllAndCount<T>(params: FindInterface, values = []): Promise<{items: T[], count: number}> {
+    const items = await this.findAll<T>(params, values);
+    const count = await this.count(params.where, values);
+
+    return {
+      items,
+      count
+    }
+  }
+
+  public static async count(where, values = []): Promise<number> {
+    const results = await this.query(`
+    SELECT
+    COUNT(id)
+    FROM
+    ${this.$tableName}
+    ${where ? 'WHERE ' + where : ''}`,
+      values);
+
+    if (results.rows.length) {
+      return results.rows[0].count;
+    }
+
+    return 0
   }
 
   public static createInstance(row) {
