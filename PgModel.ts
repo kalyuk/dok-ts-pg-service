@@ -130,8 +130,8 @@ export class PgModel extends BaseModel {
     await this.afterCreate(scope);
   }
 
-  public static findAll<T>({attributes, where, limit, offset}: FindInterface, values): Promise<T[]> {
-    const results = this.query(`
+  public static async findAll<T>({attributes, where, limit, offset}: FindInterface, values): Promise<T[]> {
+    const results = await this.query(`
     SELECT
     ${attributes ? attributes.join(',') : '*'}
     FROM
@@ -146,7 +146,7 @@ export class PgModel extends BaseModel {
       return results.rows.map(item => this.createInstance(item));
     }
 
-    return Promise.resolve([]);
+    return [];
   }
 
   public static createInstance(row) {
