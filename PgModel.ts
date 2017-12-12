@@ -1,7 +1,7 @@
-import {BaseModel} from 'dok-ts/base/BaseModel';
-import {Client} from 'pg';
-import {toCamelCase, toUnder} from './helper';
-import {BaseError} from 'dok-ts/base/BaseError';
+import { BaseModel } from 'dok-ts/base/BaseModel';
+import { Client } from 'pg';
+import { toCamelCase, toUnder } from './helper';
+import { BaseError } from 'dok-ts/base/BaseError';
 
 export interface FindOneInterface {
   attributes?: string[];
@@ -130,7 +130,7 @@ export class PgModel extends BaseModel {
     await this.afterCreate(scope);
   }
 
-  public static findAll({attributes, where, limit, offset}: FindInterface, values) {
+  public static findAll<T>({attributes, where, limit, offset}: FindInterface, values): Promise<T[]> {
     const results = this.query(`
     SELECT
     ${attributes ? attributes.join(',') : '*'}
@@ -145,6 +145,8 @@ export class PgModel extends BaseModel {
     if (results && results.rows) {
       return results.rows.map(item => this.createInstance(item));
     }
+
+    return Promise.resolve([]);
   }
 
   public static createInstance(row) {
